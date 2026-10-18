@@ -18,6 +18,20 @@ npm run preview   # serve dist/ at /Joint/
 Built with Vite, React, TypeScript and Framer Motion. HashRouter, base path `/Joint/` for GitHub Pages (alexwilder-dev.github.io/Joint/)
 (`.github/workflows/deploy.yml` builds and deploys `dist/` to Pages on push; Pages source is "GitHub Actions").
 
+## Preview build (/Joint/preview/)
+
+The same code with `VITE_WOW=1` (`npm run build:preview`) adds three things to the opening, without touching the live site:
+
+1. **The sign lights up** (first visit only, about 1.7s; any tap or key skips; off with reduced motion). Festoon bulbs flicker on,
+   the logo writes itself along its own centre line (`src/components/logoStrokes.ts`), the pig drops onto the i, and
+   "Brunch.. BBQ.. Bar.." types out. Add `?intro` to the home URL (`/#/?intro`) to replay it.
+2. **It opens on the right Joint for the moment** (`src/lib/moment.ts`): sunset countdown from the Greenwich roof, Thursday
+   music, Live Music Fridays / DJ Saturdays in Bermondsey, Brixton brunch (bottomless Sunday to Friday), Hays at lunchtime.
+3. **Greenwich in real light** (`src/components/GreenwichLight.tsx`): the terrace photo by day, at sunset or after dark,
+   picked by London time, with buttons to flick between them.
+
+To put these on the live site, set `VITE_WOW=1` for the main build (or make `WOW` true in `src/lib/flags.ts`).
+
 ## Where things live
 
 - `src/data/joint.ts`: every menu, opening hour, phone, email, event and hire option, split by venue. Edit here.

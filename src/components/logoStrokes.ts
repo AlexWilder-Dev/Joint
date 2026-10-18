@@ -1,0 +1,17 @@
+// Pen strokes along the centre line of The Joint's logo, in writing order.
+// Generated once from the traced logo (skeleton of research/images/logo-traced.svg); viewBox 0 0 1524 956.
+
+export const LOGO_STROKES: { name: string; d: string; length: number }[] = [
+  { name: 'J-bar', length: 654, d: 'M34 244 L50 236 L136 210 L164 198 L330 142 L402 120 L428 118 L448 102 L630 44 L650 34' },
+  { name: 'J-stem', length: 981, d: 'M438 112 L432 116 L436 134 L436 176 L430 368 L416 622 L404 728 L398 754 L386 784 L368 804 L358 806 L336 804 L314 792 L256 736 L188 654 L166 634' },
+  { name: 'o', length: 929, d: 'M556 316 L536 318 L526 324 L500 354 L486 384 L480 406 L468 478 L470 564 L486 638 L494 662 L508 686 L528 706 L542 710 L554 712 L576 706 L592 692 L602 678 L620 636 L626 612 L636 536 L630 436 L614 376 L592 336 L574 320 L556 316' },
+  { name: 'i', length: 750, d: 'M740 184 L740 206 L724 268 L724 278 L734 288 L728 374 L700 598 L692 642 L692 658 L668 822 L660 902 L654 922' },
+  { name: 'i-flag', length: 65, d: 'M734 290 L724 278 L716 280 L700 292 L692 312' },
+  { name: 'N-left', length: 452, d: 'M798 646 L796 634 L810 510 L822 346 L824 332 L840 316 L834 202' },
+  { name: 'N-diag', length: 1169, d: 'M836 322 L840 318 L854 328 L858 338 L892 552 L934 748 L954 794 L968 800 L982 796 L996 774 L1008 742 L1032 642 L1060 498 L1116 174' },
+  { name: 't-stem', length: 1162, d: 'M1208 110 L1194 246 L1194 284 L1192 302 L1186 312 L1186 366 L1170 538 L1162 672 L1164 816 L1168 844 L1178 880 L1184 892 L1206 910 L1238 912 L1256 906 L1284 892 L1336 858 L1458 764 L1492 732' },
+  { name: 't-bar', length: 173, d: 'M1140 322 L1156 314 L1186 312 L1190 304 L1196 300 L1232 298 L1302 278' },
+];
+
+/** The serif THE, revealed as one block. */
+export const LOGO_THE_BOX = { x: 0, y: 372, width: 336, height: 156 };

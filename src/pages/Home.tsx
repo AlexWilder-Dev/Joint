@@ -1,22 +1,134 @@
-import { motion } from 'framer-motion';
-import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Brush } from '../components/Brush';
 import { Clip } from '../components/Clip';
+import { Festoon } from '../components/Festoon';
 import { ArrowIcon } from '../components/Icons';
 import { Logo } from '../components/Logo';
+import { LogoDraw, PIG_LANDS } from '../components/LogoDraw';
 import { Photo } from '../components/Photo';
 import { VenuePanel } from '../components/VenuePanel';
+import { TypeOn } from '../components/TypeOn';
 import { VenueSwitch } from '../components/VenueSwitch';
 import { awards, brand, hire, instagramLines, monthlySpecial, occasions } from '../data/joint';
+import { WOW } from '../lib/flags';
+import { momentFor, type Moment } from '../lib/moment';
 import { daysUntil } from '../lib/time';
+import { useNow } from '../lib/useNow';
 import { useVenue } from '../lib/venue';
 
+const OPENING_SEEN = 'joint:opening-seen';
+const MOMENT_SHOWN = 'joint:moment-shown';
+const OPENING_MS = 1750;
+
+type Phase = 'playing' | 'skipped' | 'done';
+
+/**
+ * First visit only: the board's bulbs come on, the logo writes itself, the pig lands on the i and the sign types out.
+ * Any tap or key skips it. Add ?intro to the home URL to see it again.
+ */
+function useOpening(): Phase {
+  const reduce = useReducedMotion();
+  const [params] = useSearchParams();
+  const [phase, setPhase] = useState<Phase>(() => {
+    if (!WOW || reduce) return 'done';
+    if (params.has('intro')) return 'playing';
+    try {
+      return localStorage.getItem(OPENING_SEEN) ? 'done' : 'playing';
+    } catch {
+      return 'playing';
+    }
+  });
+  useEffect(() => {
+    if (phase !== 'playing') return;
+    try {
+      localStorage.setItem(OPENING_SEEN, '1');
+    } catch {
+      /* storage unavailable */
+    }
+    const end = window.setTimeout(() => setPhase('done'), OPENING_MS);
+    const skip = () => setPhase((p) => (p === 'playing' ? 'skipped' : p));
+    window.addEventListener('pointerdown', skip);
+    window.addEventListener('keydown', skip);
+    return () => {
+      window.clearTimeout(end);
+      window.removeEventListener('pointerdown', skip);
+      window.removeEventListener('keydown', skip);
+    };
+  }, [phase]);
+  return phase;
+}
+
+/** After the opening, once per visit: move to the Joint that makes most sense right now. */
+function useMoment(phase: Phase, setVenue: (id: Moment['venue']) => void) {
+  const [params] = useSearchParams();
+  const [moment, setMoment] = useState<Moment | null>(null);
+  useEffect(() => {
+    if (!WOW || phase === 'playing') return;
+    let shown = false;
+    try {
+      shown = !!sessionStorage.getItem(MOMENT_SHOWN);
+    } catch {
+      /* storage unavailable */
+    }
+    if (shown && !params.has('intro')) return;
+    const m = momentFor(new Date());
+    if (!m) return;
+    const t = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(MOMENT_SHOWN, '1');
+      } catch {
+        /* storage unavailable */
+      }
+      setVenue(m.venue);
+      setMoment(m);
+    }, 320);
+    return () => window.clearTimeout(t);
+  }, [phase]);
+  return [moment, setMoment] as const;
+}
+
+/** Rises into place at the end of the opening; renders its children untouched otherwise. */
+function Rise({ phase, delay, children }: { phase: Phase; delay: number; children: ReactNode }) {
+  if (!WOW) return <>{children}</>;
+  return (
+    <motion.div
+      key={phase === 'skipped' ? 'still' : 'in'}
+      initial={phase === 'playing' ? { opacity: 0, y: 16 } : false}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function MomentLine({ moment }: { moment: Moment }) {
+  const live = momentFor(useNow());
+  const text = live && live.venue === moment.venue ? live.text : moment.text;
+  return (
+    <motion.p className="moment" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} role="status">
+      <span className="moment__label">Right now</span>
+      <span>{text}</span>
+    </motion.p>
+  );
+}
+
 export function Home() {
-  const { setVenue } = useVenue();
+  // A fresh mount when the query changes, so /#/?intro replays the opening on an already-open page.
+  const { search } = useLocation();
+  return <HomeContent key={search} />;
+}
+
+function HomeContent() {
+  const { venue, setVenue } = useVenue();
   const panelRef = useRef<HTMLDivElement>(null);
   const [why, setWhy] = useState<string | null>(null);
   const xmasDays = daysUntil(hire.christmasOpens);
+  const phase = useOpening();
+  const playing = phase === 'playing';
+  const [moment, setMoment] = useMoment(phase, setVenue);
 
   const reveal = () => {
     if (window.matchMedia('(max-width: 899px)').matches) {
@@ -28,17 +140,30 @@ export function Home() {
     <>
       <section className="fascia" aria-labelledby="promise">
         <div className="wrap">
-          <div className="fascia__board">
-            <motion.div
-              className="fascia__logo"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Logo />
-            </motion.div>
-            <p className="fascia__sign">{brand.tagline}</p>
-          </div>
+          {WOW ? (
+            <div className="fascia__board fascia__board--lit" key={phase === 'skipped' ? 'still' : 'in'}>
+              <Festoon play={playing} />
+              <div className="fascia__logo">
+                <LogoDraw play={playing} />
+              </div>
+              <p className="fascia__sign">
+                <TypeOn text={brand.tagline} play={playing} startAt={PIG_LANDS + 0.05} />
+              </p>
+            </div>
+          ) : (
+            <div className="fascia__board">
+              <motion.div
+                className="fascia__logo"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Logo />
+              </motion.div>
+              <p className="fascia__sign">{brand.tagline}</p>
+            </div>
+          )}
+          <Rise phase={phase} delay={1.0}>
           <div className="fascia__intro">
           <h1 className="fascia__promise" id="promise">
             No two Joint locations are <em>the same.</em>
@@ -48,7 +173,9 @@ export function Home() {
             kitchen in a Bermondsey bar, and a burger hut by the river. Pick yours.
           </p>
           </div>
+          </Rise>
 
+          <Rise phase={phase} delay={1.2}>
           <div className="chips" role="group" aria-label="I’m after…" style={{ paddingTop: 0, paddingBottom: 14 }}>
             <span className="type" style={{ flex: 'none', alignSelf: 'center', fontSize: 14, color: '#cfc8ba' }}>
               I’m after:
@@ -62,6 +189,7 @@ export function Home() {
                 onClick={() => {
                   setVenue(o.venue);
                   setWhy(o.why);
+                  setMoment(null);
                   reveal();
                 }}
               >
@@ -69,7 +197,14 @@ export function Home() {
               </button>
             ))}
           </div>
-          <VenueSwitch onPick={() => setWhy(null)} />
+          <VenueSwitch
+            onPick={() => {
+              setWhy(null);
+              setMoment(null);
+            }}
+          />
+          </Rise>
+          {WOW && !why && moment && moment.venue === venue.id && <MomentLine moment={moment} />}
           {why && (
             <motion.p
               key={why}

@@ -622,3 +622,49 @@ button { cursor: pointer; }
 @media (min-width: 900px) {
   .fascia .chips { flex-wrap: wrap; overflow: visible; }
 }
+
+/* ---------- the opening (preview build) ---------- */
+
+.fascia__board--lit {
+  position: relative;
+  padding-top: 46px;
+  border-color: rgba(255, 214, 150, 0.32);
+  outline-color: rgba(255, 214, 150, 0.22);
+}
+@media (min-width: 900px) { .fascia__board--lit { padding-top: 54px; } }
+
+.festoon { position: absolute; left: 12px; right: 12px; top: 6px; height: 40px; color: rgba(244, 238, 226, 0.4); pointer-events: none; }
+.festoon__wire { position: absolute; inset: 0; width: 100%; height: 40px; overflow: visible; }
+.festoon__bulb { position: absolute; width: 10px; height: 14px; transform: translateX(-50%); }
+.festoon__bulb::before { content: ''; position: absolute; left: 3px; top: 0; width: 4px; height: 4px; border-radius: 1px; background: #2c2a26; }
+.festoon__bulb::after { content: ''; position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #3a342b; }
+.festoon__glass {
+  position: absolute; z-index: 1; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%;
+  background: #ffdc96;
+  box-shadow: 0 0 6px 2px rgba(255, 198, 112, 0.75), 0 0 20px 6px rgba(255, 170, 70, 0.22);
+}
+
+.typeon {
+  display: inline-block; vertical-align: bottom; white-space: nowrap; overflow: hidden;
+  width: 0; border-right: 0.14em solid transparent;
+}
+@keyframes typeon { to { width: var(--w); } }
+@keyframes caret { 50% { border-right-color: currentColor; } }
+
+.moment {
+  display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;
+  margin: -6px 0 0; padding-bottom: 18px; font-family: var(--font-type); color: var(--cream);
+}
+.moment__label {
+  font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pink);
+}
+
+.shot--light .light-stage { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius); background: #1c2440; }
+@media (min-width: 900px) { .shot--light .light-stage { aspect-ratio: 4 / 3; } }
+.light-stage__layer { position: absolute; inset: 0; }
+.light-stage__layer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; border-radius: 0; }
+.light-caption { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+.seg--light { border-color: color-mix(in srgb, var(--ink) 45%, transparent); }
+.seg--light button { padding: 6px 12px; font-family: var(--font-type); font-size: 13px; font-weight: 700; display: inline-flex; gap: 6px; align-items: baseline; }
+.seg__now { font-weight: 400; font-size: 11px; color: var(--accent-ink); text-transform: uppercase; letter-spacing: 0.05em; }
+.seg--light button[aria-pressed='true'] .seg__now { color: inherit; opacity: 0.75; }

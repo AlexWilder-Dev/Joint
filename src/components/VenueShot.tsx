@@ -1,5 +1,7 @@
 import type { Venue } from '../data/joint';
+import { WOW } from '../lib/flags';
 import { Clip } from './Clip';
+import { GreenwichLight } from './GreenwichLight';
 import { Photo } from './Photo';
 
 /** Each venue's photo gets its own treatment: a clipped print, a wide skyline, double rules, an enamel plate. */
@@ -16,6 +18,7 @@ export function VenueShot({ venue, slug, alt, eager }: { venue: Venue; slug?: st
     );
   }
   if (venue.id === 'greenwich') {
+    if (WOW && !slug) return <GreenwichLight eager={eager} />;
     return (
       <figure className="shot shot--wide">
         <Photo slug={s} alt={a} eager={eager} />
