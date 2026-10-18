@@ -1,0 +1,262 @@
+import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Brush } from '../components/Brush';
+import { Clip } from '../components/Clip';
+import { ArrowIcon } from '../components/Icons';
+import { Logo } from '../components/Logo';
+import { Photo } from '../components/Photo';
+import { VenuePanel } from '../components/VenuePanel';
+import { VenueSwitch } from '../components/VenueSwitch';
+import { awards, brand, hire, instagramLines, monthlySpecial, occasions } from '../data/joint';
+import { daysUntil } from '../lib/time';
+import { useVenue } from '../lib/venue';
+
+export function Home() {
+  const { setVenue } = useVenue();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [why, setWhy] = useState<string | null>(null);
+  const xmasDays = daysUntil(hire.christmasOpens);
+
+  const reveal = () => {
+    if (window.matchMedia('(max-width: 899px)').matches) {
+      panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  return (
+    <>
+      <section className="fascia" aria-labelledby="promise">
+        <div className="wrap">
+          <div className="fascia__board">
+            <motion.div
+              className="fascia__logo"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Logo />
+            </motion.div>
+            <p className="fascia__sign">{brand.tagline}</p>
+          </div>
+          <div className="fascia__intro">
+          <h1 className="fascia__promise" id="promise">
+            No two Joint locations are <em>the same.</em>
+          </h1>
+          <p className="fascia__sub">
+            Four in London since the {brand.founded} pop-up in Brixton. A market brunch spot, a roof bar at a golf range, the
+            kitchen in a Bermondsey bar, and a burger hut by the river. Pick yours.
+          </p>
+          </div>
+
+          <div className="chips" role="group" aria-label="I’m after…" style={{ paddingTop: 0, paddingBottom: 14 }}>
+            <span className="type" style={{ flex: 'none', alignSelf: 'center', fontSize: 14, color: '#cfc8ba' }}>
+              I’m after:
+            </span>
+            {occasions.map((o) => (
+              <button
+                key={o.label}
+                type="button"
+                className="chip"
+                style={{ borderColor: 'rgba(244,238,226,.35)', color: 'var(--cream)' }}
+                onClick={() => {
+                  setVenue(o.venue);
+                  setWhy(o.why);
+                  reveal();
+                }}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+          <VenueSwitch onPick={() => setWhy(null)} />
+          {why && (
+            <motion.p
+              key={why}
+              className="type"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              style={{ margin: '-6px 0 0', paddingBottom: 18, color: 'var(--pink)' }}
+              role="status"
+            >
+              {why}
+            </motion.p>
+          )}
+        </div>
+      </section>
+
+      <div ref={panelRef} style={{ scrollMarginTop: 60 }}>
+        <VenuePanel />
+      </div>
+
+      <section className="section special grain" aria-labelledby="special">
+        <div className="wrap">
+          <div className="special__card">
+            <div>
+              <Brush large as="p">
+                {monthlySpecial.label}
+              </Brush>
+              <h2 className="display special__name" id="special" style={{ marginTop: 18 }}>
+                {monthlySpecial.name}
+              </h2>
+            </div>
+            <div style={{ display: 'grid', gap: 16 }}>
+              <p className="special__desc">{monthlySpecial.desc}</p>
+              <ul className="special__parts" aria-label="What’s in it">
+                {['2 × 4oz patties', 'mustard-seared', 'American cheese', 'dill pickles', 'sesame brioche'].map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section dark grain" aria-labelledby="receipts">
+        <div className="wrap">
+          <div className="section__head">
+            <p className="eyebrow">Awards, press, telly</p>
+            <h2 className="display section__title" id="receipts">
+              The receipts
+            </h2>
+          </div>
+          <ul className="ledger">
+            {awards.verified.map((a) => (
+              <li key={a.title}>
+                <span>
+                  <span className="ledger__what">{a.title}</span>
+                  <br />
+                  {a.detail}
+                </span>
+                <a className="ledger__tag ledger__tag--ok" href={a.href} target="_blank" rel="noreferrer">
+                  On the record
+                </a>
+              </li>
+            ))}
+            {awards.claims.map((c) => (
+              <li key={c}>
+                <span className="ledger__what">{c}</span>
+                <span className="ledger__tag">Award</span>
+              </li>
+            ))}
+            <li>
+              <span>
+                Seen on <span className="ledger__what">{awards.tv}</span>
+              </span>
+              <span className="ledger__tag">TV</span>
+            </li>
+            <li>
+              <span>
+                Read about us in <span className="ledger__what">{awards.press.join(', ').replace(/, ([^,]*)$/, ' and $1')}</span>
+              </span>
+              <span className="ledger__tag">Press</span>
+            </li>
+          </ul>
+
+          <div className="quotes" style={{ marginTop: 34 }} aria-label="What they wrote">
+            {awards.quotes.map((q) => (
+              <figure className="quote" key={q.text}>
+                <blockquote>“{q.text}”</blockquote>
+                <figcaption>
+                  <a href={q.href} target="_blank" rel="noreferrer">
+                    {q.who}
+                  </a>
+                  , {q.when}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section grain" aria-labelledby="story">
+        <div className="wrap story">
+          <figure className="shot shot--clip" style={{ maxWidth: 420, transform: 'rotate(1.4deg)' }}>
+            <Clip />
+            <Photo slug="brixton-sign" alt="The Joint’s round sign under the 6th Avenue street sign in Brixton Village" sizes="(min-width: 900px) 420px, 90vw" />
+            <figcaption>Brixton Village, where it started</figcaption>
+          </figure>
+          <div>
+            <p className="eyebrow">Since {brand.founded}</p>
+            <h2 className="display section__title" id="story">
+              The pop-up that stayed
+            </h2>
+            {brand.about.map((p) => (
+              <p className="lede" key={p}>
+                {p}
+              </p>
+            ))}
+            <ul className="formula" aria-label="The formula">
+              {brand.formula.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="section themed" style={{ ['--bg' as string]: '#fbf8f2' }} aria-labelledby="bring">
+        <div className="wrap">
+          <div className="section__head">
+            <p className="eyebrow">Christmas, hire, catering</p>
+            <h2 className="display section__title" id="bring">
+              We’ll bring the burgers
+            </h2>
+          </div>
+          <div className="countdown">
+            <span className="countdown__num">{xmasDays > 0 ? xmasDays : 'Open'}</span>
+            <p className="countdown__text">
+              <strong>{xmasDays > 0 ? `${xmasDays === 1 ? 'Day' : 'Days'} till Christmas bookings open` : 'Christmas bookings are open'}</strong>
+              {xmasDays > 0 ? 'Bookings open 1 November. Request the Christmas brochure now.' : 'Ask your local Joint for the Christmas brochure.'}
+            </p>
+          </div>
+          <ul className="routes">
+            {hire.types.map((t) => (
+              <li className="route" key={t.id}>
+                <Link to={`/hire/${t.id}`}>
+                  <span className="route__title">
+                    {t.title}
+                    {t.id === 'christmas' && xmasDays > 0 && <span className="route__badge">1 Nov</span>}
+                  </span>
+                  <span className="route__line">{t.line}</span>
+                  <span className="route__arrow" aria-hidden="true">
+                    <ArrowIcon />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="truck">
+            <p className="eyebrow" style={{ margin: 0 }}>
+              The food truck has done
+            </p>
+            <ul className="truck__list">
+              {hire.events.map((e) => (
+                <li key={e}>{e}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--tight grain" aria-labelledby="insta">
+        <div className="wrap">
+          <div className="section__head">
+            <p className="eyebrow">In our own words</p>
+            <h2 className="display" id="insta" style={{ fontSize: 'clamp(30px, 7vw, 48px)' }}>
+              Lately on <a href={brand.instagram} target="_blank" rel="noreferrer">@thejointldn</a>
+            </h2>
+          </div>
+          <div className="insta">
+            {instagramLines.map((l) => (
+              <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
+                <p>{l.text}</p>
+                <span>{l.date}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
