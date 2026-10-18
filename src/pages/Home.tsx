@@ -16,6 +16,7 @@ import { WOW } from '../lib/flags';
 import { momentFor, type Moment } from '../lib/moment';
 import { daysUntil } from '../lib/time';
 import { useNow } from '../lib/useNow';
+import { usePageTitle } from '../lib/usePageTitle';
 import { useVenue } from '../lib/venue';
 
 const OPENING_SEEN = 'joint:opening-seen';
@@ -122,6 +123,7 @@ export function Home() {
 }
 
 function HomeContent() {
+  usePageTitle();
   const { venue, setVenue } = useVenue();
   const panelRef = useRef<HTMLDivElement>(null);
   const [why, setWhy] = useState<string | null>(null);

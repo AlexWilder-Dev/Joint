@@ -20,17 +20,19 @@ export function Footer() {
                   {v.name}
                 </Link>
               </h3>
-              <ul>
-                <li>{v.address[v.address.length - 1].replace('London ', '')}</li>
-                {v.phone && (
+              <address>
+                <ul>
+                  <li>{v.address[v.address.length - 1].replace('London ', '')}</li>
+                  {v.phone && (
+                    <li>
+                      <a href={`tel:${v.phone.tel}`}>{v.phone.display}</a>
+                    </li>
+                  )}
                   <li>
-                    <a href={`tel:${v.phone.tel}`}>{v.phone.display}</a>
+                    <a href={`mailto:${v.email}`}>{v.email}</a>
                   </li>
-                )}
-                <li>
-                  <a href={`mailto:${v.email}`}>{v.email}</a>
-                </li>
-              </ul>
+                </ul>
+              </address>
             </div>
           ))}
         </div>

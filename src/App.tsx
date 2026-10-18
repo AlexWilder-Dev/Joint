@@ -1,3 +1,4 @@
+import { MotionConfig } from 'framer-motion';
 import { useEffect } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { Footer } from './components/Footer';
@@ -10,13 +11,10 @@ import { NotFound } from './pages/NotFound';
 import { VenuePage } from './pages/VenuePage';
 import { VenuesPage } from './pages/VenuesPage';
 
-const DEFAULT_TITLE = 'The Joint | Brunch, BBQ & Bar in London';
-
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-    if (pathname === '/') document.title = DEFAULT_TITLE;
   }, [pathname]);
   return null;
 }
@@ -24,6 +22,7 @@ function ScrollToTop() {
 export default function App() {
   return (
     <HashRouter>
+      <MotionConfig reducedMotion="user">
       <VenueProvider>
         <ScrollToTop />
         <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>
@@ -44,6 +43,7 @@ export default function App() {
         </main>
         <Footer />
       </VenueProvider>
+      </MotionConfig>
     </HashRouter>
   );
 }

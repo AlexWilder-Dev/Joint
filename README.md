@@ -18,9 +18,9 @@ npm run preview   # serve dist/ at /Joint/
 Built with Vite, React, TypeScript and Framer Motion. HashRouter, base path `/Joint/` for GitHub Pages (alexwilder-dev.github.io/Joint/)
 (`.github/workflows/deploy.yml` builds and deploys `dist/` to Pages on push; Pages source is "GitHub Actions").
 
-## Preview build (/Joint/preview/)
+## The opening
 
-The same code with `VITE_WOW=1` (`npm run build:preview`) adds three things to the opening, without touching the live site:
+Three things make the home page open well (all on by default; build with `VITE_WOW=0` to switch them off):
 
 1. **The sign lights up** (first visit only, about 1.7s; any tap or key skips; off with reduced motion). Festoon bulbs flicker on,
    the logo writes itself along its own centre line (`src/components/logoStrokes.ts`), the pig drops onto the i, and
@@ -30,7 +30,8 @@ The same code with `VITE_WOW=1` (`npm run build:preview`) adds three things to t
 3. **Greenwich in real light** (`src/components/GreenwichLight.tsx`): the terrace photo by day, at sunset or after dark,
    picked by London time, with buttons to flick between them.
 
-To put these on the live site, set `VITE_WOW=1` for the main build (or make `WOW` true in `src/lib/flags.ts`).
+Also: schema.org data for each venue is written into `index.html` at build time from the data file
+(`scripts/structured-data.ts`), so search engines see hours, phones and addresses.
 
 ## Where things live
 

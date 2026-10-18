@@ -1,11 +1,11 @@
 import { Fragment, type ReactNode } from 'react';
-import type { Menu, MenuItem, MenuSection } from '../data/joint';
+import type { Diet, Menu, MenuItem, MenuSection } from '../data/joint';
 import { Brush } from './Brush';
 
 interface Props {
   menu: Menu;
   query: string;
-  veggieOnly: boolean;
+  diet: Diet | null;
 }
 
 export const sectionId = (menu: Menu, s: MenuSection) =>
@@ -24,10 +24,10 @@ function highlight(text: string, q: string): ReactNode {
   );
 }
 
-export function filterSections(menu: Menu, query: string, veggieOnly: boolean) {
+export function filterSections(menu: Menu, query: string, diet: Diet | null) {
   const q = query.trim().toLowerCase();
   const keep = (it: MenuItem) =>
-    (!veggieOnly || it.diet?.includes('v')) &&
+    (!diet || it.diet?.includes(diet)) &&
     (!q || it.name.toLowerCase().includes(q) || (it.desc ?? '').toLowerCase().includes(q));
   return menu.sections
     .map((s) => ({ ...s, items: s.items.filter(keep) }))
@@ -37,8 +37,8 @@ export function filterSections(menu: Menu, query: string, veggieOnly: boolean) {
 const isCaps = (t: string) => t === t.toUpperCase();
 
 /** A menu as real text, set the way the venue's own printed menu is set. */
-export function MenuView({ menu, query, veggieOnly }: Props) {
-  const sections = filterSections(menu, query, veggieOnly);
+export function MenuView({ menu, query, diet }: Props) {
+  const sections = filterSections(menu, query, diet);
   const q = query.trim();
   return (
     <div className={`menu menu--${menu.style}`}>

@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { EnquiryFlow } from '../components/EnquiryFlow';
 import { Photo } from '../components/Photo';
 import { brand, hire, venueById, type EnquiryType, type VenueId } from '../data/joint';
 import { daysUntil } from '../lib/time';
+import { usePageTitle } from '../lib/usePageTitle';
 
 export function HirePage() {
   const { type } = useParams();
@@ -13,9 +13,7 @@ export function HirePage() {
   const initialVenue = v && v in venueById ? (v as VenueId) : undefined;
   const xmasDays = daysUntil(hire.christmasOpens);
 
-  useEffect(() => {
-    document.title = 'Christmas, private hire, events & the food truck | The Joint';
-  }, []);
+  usePageTitle('Christmas, private hire, events & the food truck');
 
   return (
     <div className="grain">

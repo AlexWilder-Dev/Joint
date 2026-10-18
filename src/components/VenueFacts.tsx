@@ -1,7 +1,32 @@
+import { useState } from 'react';
 import type { Venue } from '../data/joint';
 import { hoursRows, londonNow } from '../lib/time';
 import { mapsUrl } from '../lib/venue';
 import { useNow } from '../lib/useNow';
+
+/** For the cab: puts the full address on the clipboard and says so. */
+function CopyAddress({ text }: { text: string }) {
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setState('copied');
+    } catch {
+      setState('failed');
+    }
+    window.setTimeout(() => setState('idle'), 2500);
+  };
+  return (
+    <div className="copy">
+      <button type="button" className="copy__btn" onClick={copy}>
+        Copy address
+      </button>
+      <span className="copy__status" role="status" aria-live="polite">
+        {state === 'copied' ? 'Copied.' : state === 'failed' ? 'Couldn’t copy: press and hold the address instead.' : ''}
+      </span>
+    </div>
+  );
+}
 
 /** Hours, address, phone and email, with today's row picked out. */
 export function VenueFacts({ venue }: { venue: Venue }) {
@@ -40,6 +65,7 @@ export function VenueFacts({ venue }: { venue: Venue }) {
               </span>
             ))}
           </a>
+          <CopyAddress text={venue.address.join(', ')} />
         </div>
       </div>
       {venue.phone && (

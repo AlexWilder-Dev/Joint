@@ -668,3 +668,36 @@ button { cursor: pointer; }
 .seg--light button { padding: 6px 12px; font-family: var(--font-type); font-size: 13px; font-weight: 700; display: inline-flex; gap: 6px; align-items: baseline; }
 .seg__now { font-weight: 400; font-size: 11px; color: var(--accent-ink); text-transform: uppercase; letter-spacing: 0.05em; }
 .seg--light button[aria-pressed='true'] .seg__now { color: inherit; opacity: 0.75; }
+
+/* Native controls (date pickers, time inputs, scrollbars) follow the dark venue themes. */
+.site-header, .fascia, .site-footer, .dark, .themed[data-dark='true'] { color-scheme: dark; }
+.themed[data-dark='false'] { color-scheme: light; }
+
+.site-footer address { font-style: normal; }
+.copy { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 8px; }
+.copy__btn {
+  border: 1.5px solid color-mix(in srgb, var(--ink) 45%, transparent); background: transparent; color: var(--ink);
+  border-radius: 999px; padding: 4px 11px; font-family: var(--font-type); font-size: 13px; font-weight: 700;
+}
+.copy__btn:hover { border-color: var(--ink); }
+.copy__status { font-size: 13px; color: var(--muted); }
+.chip__count { font-variant-numeric: tabular-nums; opacity: 0.7; }
+
+.gallery { list-style: none; margin: 0; padding: 0; }
+.gallery__open { display: block; width: 100%; padding: 0; border: 0; background: none; border-radius: var(--radius); overflow: hidden; cursor: zoom-in; }
+.gallery__open img { transition: transform 0.4s var(--ease); }
+.gallery__open:hover img { transform: scale(1.03); }
+
+.lightbox {
+  width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 16px;
+  border: 0; background: rgba(12, 12, 11, 0.96); color: var(--cream); color-scheme: dark;
+  display: none; flex-direction: column; justify-content: center; gap: 14px;
+}
+.lightbox[open] { display: flex; }
+.lightbox::backdrop { background: rgba(12, 12, 11, 0.9); }
+.lightbox__figure { margin: 0 auto; display: grid; gap: 10px; max-width: min(1400px, 100%); touch-action: pan-y; }
+.lightbox__figure img { max-height: calc(100dvh - 160px); width: auto; max-width: 100%; margin: 0 auto; object-fit: contain; border-radius: var(--radius); }
+.lightbox__figure figcaption { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-type); font-size: 14px; color: #cfc8ba; }
+.lightbox__count { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lightbox__controls { display: flex; justify-content: center; gap: 8px; }
+.lightbox .btn { --ink: var(--cream); --bg: var(--fascia); --accent: var(--pink); --on-accent: #0f0f0e; }

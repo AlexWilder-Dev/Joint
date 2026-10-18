@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { ActionBar } from '../components/ActionBar';
 import { ArrowIcon } from '../components/Icons';
-import { Photo } from '../components/Photo';
+import { Gallery } from '../components/Lightbox';
 import { TableRequest } from '../components/TableRequest';
 import { TonightLine } from '../components/TonightLine';
 import { VenueFacts } from '../components/VenueFacts';
@@ -11,11 +11,13 @@ import { VenueShot } from '../components/VenueShot';
 import { haysOffer, venueById, venues, type VenueId } from '../data/joint';
 import { daysLabel, londonNow, prettyTime } from '../lib/time';
 import { useNow } from '../lib/useNow';
+import { usePageTitle } from '../lib/usePageTitle';
 import { isDark, mapsUrl, themeStyle, useVenue } from '../lib/venue';
 
 export function VenuePage() {
   const { venueId } = useParams();
   const { setVenue } = useVenue();
+  const [params] = useSearchParams();
   const bookRef = useRef<HTMLElement>(null);
   const now = londonNow(useNow());
   const venue = venueId && venueId in venueById ? venueById[venueId as VenueId] : undefined;
@@ -24,9 +26,15 @@ export function VenuePage() {
     if (venue) setVenue(venue.id);
   }, [venue, setVenue]);
 
+  // Arriving from "Book" elsewhere (e.g. the menus page): go straight to the table request.
+  const wantsBook = params.has('book');
   useEffect(() => {
-    if (venue) document.title = `The Joint ${venue.name} | ${venue.kicker}`;
-  }, [venue]);
+    if (!wantsBook) return;
+    const t = window.setTimeout(() => bookRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
+    return () => window.clearTimeout(t);
+  }, [wantsBook, venueId]);
+
+  usePageTitle(venue ? `${venue.name}, ${venue.kicker}` : undefined);
 
   if (!venue) return <Navigate to="/venues" replace />;
 
@@ -199,11 +207,7 @@ export function VenuePage() {
       {venue.photos.gallery.length > 0 && (
         <section className="section" style={{ paddingTop: 0 }} aria-label={`${venue.name} photos`}>
           <div className="wrap">
-            <div className="gallery">
-              {venue.photos.gallery.map((g) => (
-                <Photo key={g.slug} slug={g.slug} alt={g.alt} sizes="(min-width: 900px) 33vw, 50vw" />
-              ))}
-            </div>
+            <Gallery shots={venue.photos.gallery} label={`${venue.name} photos`} />
             {(venue.id === 'bermondsey' || venue.id === 'hays') && (
               <p className="type muted" style={{ fontSize: 13, marginTop: 10 }}>
                 Food photographed at Brixton and Greenwich.

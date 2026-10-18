@@ -1,12 +1,10 @@
-import { useEffect } from 'react';
 import { VenuePanel } from '../components/VenuePanel';
 import { VenueSwitch } from '../components/VenueSwitch';
 import { brand } from '../data/joint';
+import { usePageTitle } from '../lib/usePageTitle';
 
 export function VenuesPage() {
-  useEffect(() => {
-    document.title = 'Four Joints | The Joint London';
-  }, []);
+  usePageTitle('Four Joints');
   return (
     <>
       <section className="fascia" aria-labelledby="venues-h">
